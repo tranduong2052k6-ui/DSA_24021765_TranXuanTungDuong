@@ -2,7 +2,6 @@
 
 using namespace std;
 
-// Khai báo cấu trúc một Node trong Singly Linked List
 struct Node {
     int data;
     Node* next;
