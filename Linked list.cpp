@@ -1,55 +1,125 @@
 #include <iostream>
+
 using namespace std;
+
+// Khai báo cấu trúc một Node trong Singly Linked List
 struct Node {
     int data;
     Node* next;
 };
 
-// 1. Chèn phần tử vào đầu
-void insertHead(Node*& head, int val) {
-    Node* p = new Node{val, head};
-    head = p;
+// Tạo node mới
+Node* createNode(int val) {
+    Node* newNode = new Node;
+    newNode->data = val;
+    newNode->next = nullptr;
+    return newNode;
 }
 
-// 2. Chèn phần tử vào cuối
-void insertTail(Node*& head, int val) {
-    Node* p = new Node{val, nullptr};
+// 1. Duyệt xuôi: O(n)
+void duyetXuoi(Node* head) {
+    Node* curr = head;
+    cout << "Duyet xuoi: ";
+    while (curr != nullptr) {
+        cout << curr->data << " ";
+        curr = curr->next;
+    }
+    cout << endl;
+}
+
+// 2. Duyệt ngược: O(n) (Sử dụng đệ quy để in từ cuối về đầu)
+void duyetNguocRec(Node* curr) {
+    if (curr == nullptr) return;
+    duyetNguocRec(curr->next);
+    cout << curr->data << " ";
+}
+
+void duyetNguoc(Node* head) {
+    cout << "Duyet nguoc: ";
+    duyetNguocRec(head);
+    cout << endl;
+}
+
+// 3. Truy cập phần tử tại vị trí index (0-indexed): O(n)
+int truyCap(Node* head, int index) {
+    Node* curr = head;
+    int count = 0;
+    while (curr != nullptr) {
+        if (count == index) return curr->data;
+        curr = curr->next;
+        count++;
+    }
+    cout << "Vi tri khong hop le!" << endl;
+    return -1;
+}
+
+// 4. Chèn phần tử vào đầu: O(1)
+void chenDau(Node* &head, int val) {
+    Node* newNode = createNode(val);
+    newNode->next = head;
+    head = newNode;
+}
+
+// 5. Chèn phần tử vào cuối: O(n)
+void chenCuoi(Node* &head, int val) {
+    Node* newNode = createNode(val);
     if (head == nullptr) {
-        head = p;
+        head = newNode;
         return;
     }
     Node* curr = head;
     while (curr->next != nullptr) {
         curr = curr->next;
     }
-    curr->next = p;
+    curr->next = newNode;
 }
 
-// 3. Chèn vào vị trí index bất kì
-void insertAt(Node*& head, int index, int val) {
-    if (index <= 0 || head == nullptr) {
-        insertHead(head, val);
+// 6. Chèn vào vị trí i: O(n)
+void chenViTri(Node* &head, int index, int val) {
+    if (index < 0) {
+        cout << "Vi tri khong hop le!" << endl;
         return;
     }
-    Node* curr = head;
-    for (int i = 0; curr->next != nullptr && i < index - 1; i++) {
-        curr = curr->next;
+    if (index == 0) {
+        chenDau(head, val);
+        return;
     }
-    Node* p = new Node{val, curr->next};
-    curr->next = p;
+
+    Node* curr = head;
+    int count = 0;
+    // Tìm node đứng trước vị trí index (vị trí index - 1)
+    while (curr != nullptr && count < index - 1) {
+        curr = curr->next;
+        count++;
+    }
+
+    if (curr == nullptr) {
+        cout << "Vi tri vuot qua kich thuoc danh sach!" << endl;
+        return;
+    }
+
+    Node* newNode = createNode(val);
+    newNode->next = curr->next;
+    curr->next = newNode;
 }
 
-// 4. Xóa phần tử đầu
-void deleteHead(Node*& head) {
-    if (head == nullptr) return;
+// 7. Xóa phần tử đầu: O(1)
+void xoaDau(Node* &head) {
+    if (head == nullptr) {
+        cout << "Danh sach rong!" << endl;
+        return;
+    }
     Node* temp = head;
     head = head->next;
     delete temp;
 }
 
-// 5. Xóa phần tử cuối 
-void deleteTail(Node*& head) {
-    if (head == nullptr) return;
+// 8. Xóa phần tử cuối: O(n)
+void xoaCuoi(Node* &head) {
+    if (head == nullptr) {
+        cout << "Danh sach rong!" << endl;
+        return;
+    }
     if (head->next == nullptr) {
         delete head;
         head = nullptr;
@@ -63,90 +133,57 @@ void deleteTail(Node*& head) {
     curr->next = nullptr;
 }
 
-// 6. Xóa phần tử tại vị trí index bất kì
-void deleteAt(Node*& head, int index) {
-    if (head == nullptr || index < 0) return;
-    if (index == 0) {
-        deleteHead(head);
+// 9. Xóa vị trí i: O(n)
+void xoaViTri(Node* &head, int index) {
+    if (head == nullptr || index < 0) {
+        cout << "Vi tri khong hop le!" << endl;
         return;
     }
-    Node* curr = head;
-    for (int i = 0; curr->next != nullptr && i < index - 1; i++) {
-        curr = curr->next;
+    if (index == 0) {
+        xoaDau(head);
+        return;
     }
-    if (curr->next == nullptr) return;
+
+    Node* curr = head;
+    int count = 0;
+    // Tìm node đứng trước vị trí cần xóa (index - 1)
+    while (curr != nullptr && count < index - 1) {
+        curr = curr->next;
+        count++;
+    }
+
+    if (curr == nullptr || curr->next == nullptr) {
+        cout << "Vi tri khong ton tai!" << endl;
+        return;
+    }
 
     Node* temp = curr->next;
     curr->next = temp->next;
     delete temp;
 }
 
-// 7. Truy cập phần tử tại vị trí index
-int getAt(Node* head, int index) {
-    Node* curr = head;
-    for (int i = 0; curr != nullptr && i < index; i++) {
-        curr = curr->next;
-    }
-    return (curr != nullptr) ? curr->data : -1;
-}
-
-// 8. Duyệt xuôi
-void printForward(Node* head) {
-    cout << "Duyet xuoi: ";
-    for (Node* curr = head; curr != nullptr; curr = curr->next) {
-        cout << curr->data << " ";
-    }
-    cout << "\n";
-}
-
-
-void printBackwardHelper(Node* head) {
-    if (head == nullptr) return;
-    printBackwardHelper(head->next);
-    cout << head->data << " ";
-}
-
-// 9. Duyệt ngược 
-void printBackward(Node* head) {
-    cout << "Duyet nguoc: ";
-    printBackwardHelper(head);
-    cout << "\n";
-}
-
-
-void clearList(Node*& head) {
-    while (head != nullptr) {
-        deleteHead(head);
-    }
-}
-
 int main() {
-    Node* head = nullptr; 
-
-
-    insertHead(head, 20);    
-    insertHead(head, 10);    
-    insertTail(head, 40);     
-    insertAt(head, 2, 30);    
-
-  
-    printForward(head);
-    printBackward(head);
-
-    cout << "Gia tri tai vi tri 2: " << getAt(head, 2) << "\n";
-
-    deleteHead(head);
-    cout << "Sau khi xoa dau: ";
-    printForward(head);
-
-    deleteTail(head);
-    cout << "Sau khi xoa cuoi: ";
-    printForward(head);
-
-    deleteAt(head, 1);
-    cout << "Sau khi xoa vi tri 1: ";
-    printForward(head);
-    clearList(head);
+    Node* head = nullptr; // Khởi tạo danh sách liên kết đơn rỗng
+    
+    chenCuoi(head, 10);
+    chenCuoi(head, 20);
+    chenDau(head, 5);
+    duyetXuoi(head);  // Kết quả: 5 10 20
+    duyetNguoc(head); // Kết quả: 20 10 5 (dùng đệ quy in ngược)
+    
+    chenViTri(head, 1, 15);
+    duyetXuoi(head);  // Kết quả: 5 15 10 20
+    
+    cout << "Truy cap vi tri 2: " << truyCap(head, 2) << endl; // Kết quả: 10
+    
+    xoaDau(head);
+    duyetXuoi(head);  // Kết quả: 15 10 20
+    
+    xoaCuoi(head);
+    duyetXuoi(head);  // Kết quả: 15 10
+    
+    xoaViTri(head, 1);
+    duyetXuoi(head);  // Kết quả: 15
 
     return 0;
 }
