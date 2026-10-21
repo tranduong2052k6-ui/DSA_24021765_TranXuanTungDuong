@@ -2,7 +2,6 @@
 
 using namespace std;
 
-// Khai báo cấu trúc một Node
 struct Node {
     int data;
     Node* next;
