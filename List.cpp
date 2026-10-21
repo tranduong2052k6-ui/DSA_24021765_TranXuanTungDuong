@@ -1,192 +1,165 @@
+
 #include <iostream>
 using namespace std;
 
-struct Node {
-    int data;
-    Node* next;
+const int MAX = 100;
+
+struct List {
+    int data[MAX];
+    int n;
+
+    void init() {
+        n = 0;
+    }
+
+    int getAt(int i) {
+        if (i < 0 || i >= n) {
+            cout << "Vi tri khong hop le!\n";
+            return -1;
+        }
+        return data[i];
+    }
+
+    void insertHead(int val) {
+        if (n >= MAX) {
+            cout << "Danh sach da day!\n";
+            return;
+        }
+
+        for (int i = n; i > 0; i--) {
+            data[i] = data[i - 1];
+        }
+
+        data[0] = val;
+        n++;
+    }
+
+    void insertTail(int val) {
+        if (n >= MAX) {
+            cout << "Danh sach da day!\n";
+            return;
+        }
+
+        data[n] = val;
+        n++;
+    }
+
+    void insertAt(int i, int val) {
+        if (i < 0 || i > n) {
+            cout << "Vi tri them khong hop le!\n";
+            return;
+        }
+
+        if (n >= MAX) {
+            cout << "Danh sach da day!\n";
+            return;
+        }
+
+        for (int j = n; j > i; j--) {
+            data[j] = data[j - 1];
+        }
+
+        data[i] = val;
+        n++;
+    }
+
+    void deleteHead() {
+        if (n <= 0) {
+            cout << "Danh sach rong!\n";
+            return;
+        }
+
+        for (int i = 0; i < n - 1; i++) {
+            data[i] = data[i + 1];
+        }
+
+        n--;
+    }
+
+    int deleteTail() {
+        if (n <= 0) {
+            cout << "Danh sach rong!\n";
+            return -1;
+        }
+
+        return data[--n];
+    }
+
+    void deleteAt(int i) {
+        if (i < 0 || i >= n) {
+            cout << "Vi tri xoa khong hop le!\n";
+            return;
+        }
+
+        for (int j = i; j < n - 1; j++) {
+            data[j] = data[j + 1];
+        }
+
+        n--;
+    }
+
+    void traverseForward() {
+        cout << "Duyet xuoi: ";
+
+        for (int i = 0; i < n; i++) {
+            cout << data[i] << " ";
+        }
+
+        cout << endl;
+    }
+
+    void traverseBackward() {
+        cout << "Duyet nguoc: ";
+
+        for (int i = n - 1; i >= 0; i--) {
+            cout << data[i] << " ";
+        }
+
+        cout << endl;
+    }
+
+    bool isempty() {
+        return n == 0;
+    }
+
+    int size() {
+        return n;
+    }
 };
 
-Node* createNode(int val) {
-    Node* newNode = new Node;
-    newNode->data = val;
-    newNode->next = nullptr;
-    return newNode;
-}
-
-void duyet(Node* head) {
-    Node* curr = head;
-    cout << "Danh sach: ";
-    while (curr != nullptr) {
-        cout << curr->data << " ";
-        curr = curr->next;
-    }
-    cout << endl;
-}
-
-int truyCap(Node* head, int index) {
-    if (index < 0) {
-        cout << "Vi tri khong hop le!" << endl;
-        return -1;
-    }
-
-    Node* curr = head;
-    int count = 0;
-
-    while (curr != nullptr) {
-        if (count == index) return curr->data;
-        curr = curr->next;
-        count++;
-    }
-
-    cout << "Vi tri khong hop le!" << endl;
-    return -1;
-}
-
-void chenDau(Node* &head, int val) {
-    Node* newNode = createNode(val);
-    newNode->next = head;
-    head = newNode;
-}
-
-void chenCuoi(Node* &head, int val) {
-    Node* newNode = createNode(val);
-
-    if (head == nullptr) {
-        head = newNode;
-        return;
-    }
-
-    Node* curr = head;
-    while (curr->next != nullptr) {
-        curr = curr->next;
-    }
-
-    curr->next = newNode;
-}
-
-void chenViTri(Node* &head, int index, int val) {
-    if (index < 0) {
-        cout << "Vi tri khong hop le!" << endl;
-        return;
-    }
-
-    if (index == 0) {
-        chenDau(head, val);
-        return;
-    }
-
-    Node* curr = head;
-    int count = 0;
-
-    while (curr != nullptr && count < index - 1) {
-        curr = curr->next;
-        count++;
-    }
-
-    if (curr == nullptr) {
-        cout << "Vi tri vuot qua kich thuoc danh sach!" << endl;
-        return;
-    }
-
-    Node* newNode = createNode(val);
-    newNode->next = curr->next;
-    curr->next = newNode;
-}
-
-void xoaDau(Node* &head) {
-    if (head == nullptr) {
-        cout << "Danh sach rong!" << endl;
-        return;
-    }
-
-    Node* temp = head;
-    head = head->next;
-    delete temp;
-}
-
-void xoaCuoi(Node* &head) {
-    if (head == nullptr) {
-        cout << "Danh sach rong!" << endl;
-        return;
-    }
-
-    if (head->next == nullptr) {
-        delete head;
-        head = nullptr;
-        return;
-    }
-
-    Node* curr = head;
-
-    while (curr->next->next != nullptr) {
-        curr = curr->next;
-    }
-
-    delete curr->next;
-    curr->next = nullptr;
-}
-
-void xoaViTri(Node* &head, int index) {
-    if (head == nullptr || index < 0) {
-        cout << "Vi tri khong hop le!" << endl;
-        return;
-    }
-
-    if (index == 0) {
-        xoaDau(head);
-        return;
-    }
-
-    Node* curr = head;
-    int count = 0;
-
-    while (curr->next != nullptr && count < index - 1) {
-        curr = curr->next;
-        count++;
-    }
-
-    if (curr->next == nullptr) {
-        cout << "Vi tri khong ton tai!" << endl;
-        return;
-    }
-
-    Node* temp = curr->next;
-    curr->next = temp->next;
-    delete temp;
-}
-
-void giaiPhong(Node* &head) {
-    while (head != nullptr) {
-        Node* temp = head;
-        head = head->next;
-        delete temp;
-    }
-}
-
 int main() {
-    Node* head = nullptr;
+    List L;
+    L.init();
 
-    chenCuoi(head, 10);
-    chenCuoi(head, 20);
-    chenDau(head, 5);
-    duyet(head);
+    L.insertTail(10);
+    L.insertTail(20);
+    L.insertTail(30);
+    L.traverseForward();
 
-    chenViTri(head, 1, 15);
-    duyet(head);
+    L.insertHead(5);
+    L.traverseForward();
 
-    cout << "Truy cap vi tri 2: "
-         << truyCap(head, 2) << endl;
+    L.insertAt(2, 15);
+    L.traverseForward();
 
-    xoaDau(head);
-    duyet(head);
+    cout << "Phan tu tai vi tri 2: "
+         << L.getAt(2) << endl;
 
-    xoaCuoi(head);
-    duyet(head);
+    L.deleteHead();
+    L.traverseForward();
 
-    xoaViTri(head, 1);
-    duyet(head);
+    cout << "Phan tu vua xoa o cuoi: "
+         << L.deleteTail() << endl;
+    L.traverseForward();
 
-    giaiPhong(head);
+    L.deleteAt(1);
+    L.traverseForward();
+
+    L.traverseBackward();
+
+    cout << "So phan tu: " << L.size() << endl;
+    cout << "Danh sach rong: "
+         << (L.isempty() ? "Co" : "Khong") << endl;
 
     return 0;
 }
